@@ -3,7 +3,7 @@ title = "Slack-Github-Bot config"
 repository_link = "https://github.com/persman96/Slack-GitHub-Bot"
 
 # requires rights to access the repository and trigger webhooks
-authorization_token = "YOUR TOKEN"
+authorization_token = "YOUR TOKEN HERE"
 
 timeout = 10 # timeout for requests in seconds
 
