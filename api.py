@@ -5,8 +5,8 @@ from logging import info, error, debug
 
 config = load_config_dict()
 
-owner = config["repository"].split("/")[-2]
-repo = config["repository"].split("/")[-2]
+owner = config["repository_link"].split("/")[-2]
+repo = config["repository_link"].split("/")[-1]
 token = config["authorization_token"]
 timeout = config["timeout"]
 
