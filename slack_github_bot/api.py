@@ -1,8 +1,9 @@
 import json
 from typing import Optional
 from requests import get, post
-from common import load_config_dict, parse_workflow_run
 from logging import info, error, debug
+
+from slack_github_bot.common import load_config_dict, parse_workflow_run
 
 config = load_config_dict()
 

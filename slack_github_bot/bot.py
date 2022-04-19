@@ -3,10 +3,9 @@ import json
 import slack  # slackclient
 import os
 from pathlib import Path
-from dotenv import load_dotenv  # python-dotenv
 from flask import Flask, request, Response, jsonify
 from slackeventsapi import SlackEventAdapter
-from common import load_config_dict, parse_workflow_run
+from slack_github_bot.common import load_config_dict, parse_workflow_run
 
 app = Flask(__name__)
 

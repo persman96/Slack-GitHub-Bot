@@ -1,7 +1,10 @@
-from logging import error
+import os
+import pathlib
 import toml
+from logging import error
 
-CFG_PATH = "config.toml"
+current_dir = pathlib.Path(__file__).parent.absolute()
+CFG_PATH = os.path.join(current_dir, "config.toml")
 
 
 def load_config_dict() -> dict:
