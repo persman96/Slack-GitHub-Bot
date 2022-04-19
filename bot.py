@@ -1,10 +1,12 @@
+import json
+
 import slack  # slackclient
 import os
 from pathlib import Path
 from dotenv import load_dotenv  # python-dotenv
-from flask import Flask, request, Response
+from flask import Flask, request, Response, jsonify
 from slackeventsapi import SlackEventAdapter
-from common import load_config_dict
+from common import load_config_dict, parse_workflow_run
 
 app = Flask(__name__)
 
@@ -39,10 +41,37 @@ API_PORT = cfg["api_port"]
 #
 #     return Response(), 200
 
+counter = 0
+
 
 @app.route('/', methods=['POST'])
-def handle_webhook(event):
-    print(event)
+def handle_webhook():
+    """
+    Endpoint to receive webhooks from GitHub API.
+    Currently, only handles workflow_run events.
+    """
+    global counter
+
+    payload = request.get_data().decode('utf-8')
+    data_dict = json.loads(payload)
+
+    # create folder tmp if it doesn't exist
+    tmp_dir = Path(os.path.join(os.getcwd(), 'tmp'))
+    if not tmp_dir.exists():
+        tmp_dir.mkdir()
+
+    with open(f'tmp/payload-{counter}.json', 'w') as f:
+        json.dump(data_dict, f)
+
+    counter += 1
+
+    workflow_data = data_dict.get("workflow_run", False)
+    if workflow_data:
+        run = parse_workflow_run(data_dict["workflow_run"])
+        name, branch, conclusion = run["name"], run["head_branch"], run["conclusion"]
+        print(f"Workflow {name} on branch {branch}: {conclusion}")
+
+    return Response(), 200
 
 
 if __name__ == "__main__":
