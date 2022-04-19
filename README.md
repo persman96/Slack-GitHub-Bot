@@ -1,11 +1,19 @@
-# Slack-GitHub-Bot
+## Slack-GitHub-Bot
 
+### Installation
+```bash 
+pip3 install .
+```
+
+### Usage
+```bash
+python3 slack_github_bot/api.py
+```
+
+ ### Configuration
 Setup Slack bot: https://api.slack.com/apps
 
-Uses the following python packages.
-slackclient, python-dotenv, flask, slackeventsapi
+Use the config.toml file to configure the bot.
 
-Create a .env file for slack secrets.
-
-Uses ngrok
+Use ngrok to setup tunnel if you run it on a local machine.
 
