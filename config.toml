@@ -1,9 +1,14 @@
 title = "Slack-Github-Bot config"
 
+api_port = 3000
+
+# SLACK CONFIG
+signing_secret = "YOUR_SIGNING_SECRET"
+slack_token = "YOUR_SLACK_TOKEN"
+
+
+# GITHUB CONFIG
 repository_link = "https://github.com/persman96/Slack-GitHub-Bot"
-
-# requires rights to access the repository and trigger webhooks
 authorization_token = "YOUR TOKEN HERE"
-
 timeout = 10 # timeout for requests in seconds
 
