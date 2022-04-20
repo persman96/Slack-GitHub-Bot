@@ -3,13 +3,14 @@ import slack
 from flask import Flask, request, Response
 from slackeventsapi import SlackEventAdapter
 from slack_github_bot.common import load_config_dict, parse_workflow_run
-from slack_github_bot.api import get_branches_of_repo
+from slack_github_bot.api import *
 import os
 
-app = Flask(__name__)
 
-cfg = load_config_dict()
+app = Flask(__name__)
 """
+cfg = load_config_dict()
+
 SIGNING_SECRET = cfg['signing_secret']
 SLACK_TOKEN = cfg['slack_token']
 API_PORT = cfg["api_port"]
@@ -56,6 +57,68 @@ def get_branches():
 
     if response and BOT_ID != user_id:
         client.chat_postMessage(channel=channel_id, text=response)
+
+    return Response(), 200
+
+
+@app.route('/get_all_workflows', methods=['POST'])
+def workflow_of_repo():
+    data = request.form
+    user_id = data.get('user_id')
+    channel_id = data.get('channel_id')
+
+    response = get_all_workflows_of_repo()
+
+    if response and BOT_ID != user_id:
+        client.chat_postMessage(channel=channel_id, text=response)
+
+    return Response(), 200
+
+@app.route('/get_all_workflows_runs', methods=['POST'])
+def workflow_runs_of_repo():
+    data = request.form
+    user_id = data.get('user_id')
+    channel_id = data.get('channel_id')
+
+    response = get_workflow_runs_of_repo()
+
+    if response and BOT_ID != user_id:
+        client.chat_postMessage(channel=channel_id, text=response)
+
+    return Response(), 200
+
+
+# Example id from our repo: 2197509667
+@app.route('/get_workflow_run', methods=['POST'])
+def workflow_run():
+    data = request.form
+    user_id = data.get('user_id')
+    channel_id = data.get('channel_id')
+    run_id = int(data.get('text'))
+
+    response = get_workflow_run(run_id)
+
+    if response and BOT_ID != user_id:
+        client.chat_postMessage(channel=channel_id, text=response)
+
+    return Response(), 200
+
+
+@app.route('/create_workflow_dispatch_event', methods=['POST'])
+def workflow_dispatch_event():
+    data = request.form
+    user_id = data.get('user_id')
+    channel_id = data.get('channel_id')
+    text = data.get('text')
+    run_ID = text.split(' ')[0]
+    branch = text.split(' ')[1]
+
+    response = create_workflow_dispatch_event(run_ID, branch)
+
+    if response and BOT_ID != user_id:
+        client.chat_postMessage(channel=channel_id, text=response)
+
+    return Response(), 200
 
 
 @app.route('/', methods=['POST'])
