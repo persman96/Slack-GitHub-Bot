@@ -2,15 +2,23 @@ import json
 from typing import Optional
 from requests import get, post
 from logging import info, error, debug
-
+import os
 from slack_github_bot.common import load_config_dict, parse_workflow_run
 
 config = load_config_dict()
-
+"""
 owner = config["repository_link"].split("/")[-2]
 repo = config["repository_link"].split("/")[-1]
 token = config["authorization_token"]
 timeout = config["timeout"]
+"""
+
+# Config setup for heroku
+repository_link = os.environ['repository_link']
+owner = repository_link.split("/")[-2]
+repo = repository_link.split("/")[-1]
+token = os.environ["authorization_token"]
+timeout = os.environ["timeout"]
 
 
 def get_branches_of_repo() -> Optional[list]:

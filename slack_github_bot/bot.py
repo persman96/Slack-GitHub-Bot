@@ -3,13 +3,22 @@ import slack
 from flask import Flask, request, Response
 from slackeventsapi import SlackEventAdapter
 from slack_github_bot.common import load_config_dict, parse_workflow_run
+from slack_github_bot.api import get_branches_of_repo
+import os
 
 app = Flask(__name__)
 
 cfg = load_config_dict()
+"""
 SIGNING_SECRET = cfg['signing_secret']
 SLACK_TOKEN = cfg['slack_token']
 API_PORT = cfg["api_port"]
+"""
+
+SIGNING_SECRET = os.environ['signing_secret']
+SLACK_TOKEN = os.environ['slack_token']
+API_PORT = os.environ["api_port"]
+
 
 slack_event_adapter = SlackEventAdapter(SIGNING_SECRET, '/slack/events', app)
 client = slack.WebClient(token=SLACK_TOKEN)
@@ -36,6 +45,17 @@ def run_workflow():
         client.chat_postMessage(channel=channel_id, text='Working on it!')
 
     return Response(), 200
+
+@app.route('/get_branches', methods=['POST'])
+def get_branches():
+    data = request.form
+    user_id = data.get('user_id')
+    channel_id = data.get('channel_id')
+
+    response = get_branches_of_repo()
+
+    if response and BOT_ID != user_id:
+        client.chat_postMessage(channel=channel_id, text=response)
 
 
 @app.route('/', methods=['POST'])
