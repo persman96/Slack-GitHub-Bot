@@ -57,6 +57,8 @@ def get_branches():
     if response and BOT_ID != user_id:
         client.chat_postMessage(channel=channel_id, text=response)
 
+    return Response(), 200
+
 
 @app.route('/', methods=['POST'])
 def handle_webhook():
