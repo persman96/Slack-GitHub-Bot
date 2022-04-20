@@ -13,5 +13,5 @@ setuptools.setup(
     package_data={'': ['config.toml']},
     include_package_data=True,
     python_requires=">=3.6",
-    install_requires=["flask", "slackclient", "requests", "slackeventsapi", "toml"],
+    install_requires=["flask", "slackclient", "requests", "slackeventsapi", "toml", "gunicorn"],
 )
