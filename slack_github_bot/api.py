@@ -18,8 +18,8 @@ repository_link = os.environ['repository_link']
 owner = repository_link.split("/")[-2]
 repo = repository_link.split("/")[-1]
 token = os.environ["authorization_token"]
-#timeout = os.environ["timeout"]
 timeout = 10
+
 
 def get_branches_of_repo() -> Optional[list]:
     """
