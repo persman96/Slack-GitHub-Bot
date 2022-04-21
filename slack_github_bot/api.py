@@ -5,14 +5,6 @@ from logging import info, error, debug
 import os
 from slack_github_bot.common import load_config_dict, parse_workflow_run
 
-config = load_config_dict()
-"""
-owner = config["repository_link"].split("/")[-2]
-repo = config["repository_link"].split("/")[-1]
-token = config["authorization_token"]
-timeout = config["timeout"]
-"""
-
 # Config setup for heroku
 repository_link = os.environ['repository_link']
 owner = repository_link.split("/")[-2]
@@ -30,6 +22,19 @@ def get_branches_of_repo() -> Optional[list]:
     try:
         response = get(ENDPOINT, headers={"Authorization": f"token {token}"}, timeout=timeout)
         return [branch["name"] for branch in response.json()]
+    except Exception as e:
+        error(f"Error: {e}")
+        return None
+
+def get_workflows() -> Optional[list]:
+    """
+    Get all branches of a repository.
+    :return:
+    """
+    ENDPOINT = f"https://api.github.com/repos/{owner}/{repo}/actions/workflows"
+    try:
+        response = get(ENDPOINT, headers={"Authorization": f"token {token}"}, timeout=timeout)
+        return response.json()
     except Exception as e:
         error(f"Error: {e}")
         return None
