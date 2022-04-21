@@ -1,4 +1,5 @@
 import json
+import random
 import slack
 from flask import Flask, request, Response
 from slackeventsapi import SlackEventAdapter
@@ -7,13 +8,11 @@ from slack_github_bot.api import *
 from slack_github_bot.blocks import *
 import os
 
-
 app = Flask(__name__)
 
 SIGNING_SECRET = os.environ['signing_secret']
 SLACK_TOKEN = os.environ['slack_token']
 API_PORT = os.environ["api_port"]
-
 
 slack_event_adapter = SlackEventAdapter(SIGNING_SECRET, '/slack/events', app)
 client = slack.WebClient(token=SLACK_TOKEN)
@@ -61,7 +60,6 @@ def get_branches():
         }
         list.append(section)
 
-
     if response and BOT_ID != user_id:
         client.chat_postMessage(channel=channel_id, blocks=list, text=branches)
 
@@ -78,7 +76,6 @@ def workflow_of_repo():
     workflows = get_all_workflows_of_repo()
 
     for workflow in workflows["workflows"]:
-
         name = workflow["name"]
         file_name = workflow["path"].split("/")[-1]
         url = workflow["html_url"]
@@ -166,6 +163,32 @@ def workflow_dispatch_event():
 
     if response and BOT_ID != user_id:
         client.chat_postMessage(channel=channel_id, text=response)
+
+    return Response(), 200
+
+
+@app.route('/meme', methods=['POST'])
+def show_meme():
+    data = request.form
+    user_id = data.get('user_id')
+    channel_id = data.get('channel_id')
+
+    # get directory of file
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    with open(os.path.join(dir_path, 'memes.txt'), 'r') as f:
+        meme_urls = f.read().splitlines()
+    meme_url = random.choice(meme_urls)
+
+    block = [
+        {
+            "type": "image",
+            "image_url": meme_url,
+            "alt_text": "meme"
+        }
+    ]
+
+    if BOT_ID != user_id:
+        client.chat_postMessage(channel=channel_id, blocks=block)
 
     return Response(), 200
 
