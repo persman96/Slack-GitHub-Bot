@@ -177,7 +177,7 @@ def show_meme():
     # get directory of file
     dir_path = os.path.dirname(os.path.realpath(__file__))
     with open(os.path.join(dir_path, 'memes.txt'), 'r') as f:
-        meme_urls = f.readlines()
+        meme_urls = f.read().splitlines()
     meme_url = random.choice(meme_urls)
 
     # create block to display meme
