@@ -174,7 +174,9 @@ def show_meme():
     user_id = data.get('user_id')
     channel_id = data.get('channel_id')
 
-    with open('memes.txt', 'r') as f:
+    # get directory of file
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    with open(os.path.join(dir_path, 'memes.txt'), 'r') as f:
         meme_urls = f.readlines()
     meme_url = random.choice(meme_urls)
 
