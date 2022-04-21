@@ -54,7 +54,8 @@ def get_branches():
     user_id = data.get('user_id')
     channel_id = data.get('channel_id')
 
-    response = get_branches_of_repo()
+    branches = get_branches_of_repo()
+    response = [f"{branch} \t" for branch in branches]
 
     if response and BOT_ID != user_id:
         client.chat_postMessage(channel=channel_id, text=response)
@@ -94,14 +95,22 @@ def workflow_runs_of_repo():
     response = ""
     workflow_runs = get_workflow_runs_of_repo()
 
-    for run in workflow_runs:
+    text = data.get("text")
+    text_arr = text.split(" ")
+    if len(text_arr) > 1 and 0 < int(text_arr[1]) <= len(workflow_runs):
+        n = int(text_arr[1])
+    else:
+        n = len(workflow_runs)
+
+    for run in workflow_runs[:n]:
         name = run["name"]
         branch = run["head_branch"]
         user = run["trigger_user"]
         conclusion = run["conclusion"]
         status = run["status"]
+        created_at = run["created_at"]
 
-        response += f"Name: {name} \t Branch: {branch} \t User: {user} \t Conclusion: {conclusion} \t Status: {status}\n"
+        response += f"Name: {name} \t Branch: {branch} \t User: {user} \t Conclusion: {conclusion} \t Status: {status} Created at: {created_at}\n"
 
     if response and BOT_ID != user_id:
         client.chat_postMessage(channel=channel_id, text=response)
@@ -134,7 +143,12 @@ def workflow_dispatch_event():
     run_ID = text.split(' ')[0]
     branch = text.split(' ')[1]
 
-    response = create_workflow_dispatch_event(run_ID, branch)
+    success = create_workflow_dispatch_event(run_ID, branch)
+
+    if success:
+        response = f"Workflow {run_ID} dispatched on branch {branch}!"
+    else:
+        response = f"Workflow {run_ID} could not be dispatched on branch {branch}!"
 
     if response and BOT_ID != user_id:
         client.chat_postMessage(channel=channel_id, text=response)
@@ -158,9 +172,10 @@ def handle_webhook():
     if workflow_data:
         run = parse_workflow_run(data_dict["workflow_run"])
         name, branch, conclusion = run["name"], run["head_branch"], run["conclusion"]
-        response = f"Workflow {name} on branch {branch}: {conclusion}"
-        channel_id = "C03BV0JMXQC"
-        client.chat_postMessage(channel=channel_id, text=response)
+        if conclusion:
+            response = f"Workflow {name} on branch {branch}: {conclusion}"
+            channel_id = "C03BV0JMXQC"
+            client.chat_postMessage(channel=channel_id, text=response)
 
     return Response(), 200
 
