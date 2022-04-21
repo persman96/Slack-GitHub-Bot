@@ -137,8 +137,9 @@ def handle_webhook():
     if workflow_data:
         run = parse_workflow_run(data_dict["workflow_run"])
         name, branch, conclusion = run["name"], run["head_branch"], run["conclusion"]
-        print(f"Workflow {name} on branch {branch}: {conclusion}")
-        # TODO send message to slack channel
+        response = f"Workflow {name} on branch {branch}: {conclusion}"
+        channel_id = "C03BV0JMXQC"
+        client.chat_postMessage(channel=channel_id, text=response)
 
     return Response(), 200
 
