@@ -47,6 +47,7 @@ def run_workflow():
 
     return Response(), 200
 
+
 @app.route('/get_branches', methods=['POST'])
 def get_branches():
     data = request.form
@@ -67,12 +68,22 @@ def workflow_of_repo():
     user_id = data.get('user_id')
     channel_id = data.get('channel_id')
 
-    response = get_all_workflows_of_repo()
+    response = ""
+    workflows = get_all_workflows_of_repo()
+
+    for workflow in workflows["workflows"]:
+
+        name = workflow["name"]
+        file_name = workflow["path"].split("/")[-1]
+        url = workflow["html_url"]
+
+        response += f"Name: {name} \t File: {file_name} \t {url}\n"
 
     if response and BOT_ID != user_id:
         client.chat_postMessage(channel=channel_id, text=response)
 
     return Response(), 200
+
 
 @app.route('/get_all_workflows_runs', methods=['POST'])
 def workflow_runs_of_repo():
@@ -80,7 +91,17 @@ def workflow_runs_of_repo():
     user_id = data.get('user_id')
     channel_id = data.get('channel_id')
 
-    response = get_workflow_runs_of_repo()
+    response = ""
+    workflow_runs = get_workflow_runs_of_repo()
+
+    for run in workflow_runs:
+        name = run["name"]
+        branch = run["head_branch"]
+        user = run["trigger_user"]
+        conclusion = run["conclusion"]
+        status = run["status"]
+
+        response += f"Name: {name} \t Branch: {branch} \t User: {user} \t Conclusion: {conclusion} \t Status: {status}\n"
 
     if response and BOT_ID != user_id:
         client.chat_postMessage(channel=channel_id, text=response)
