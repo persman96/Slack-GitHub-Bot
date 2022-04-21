@@ -56,9 +56,24 @@ def get_branches():
 
     branches = get_branches_of_repo()
     response = [f"{branch} \t" for branch in branches]
+    list = []
+    for branch in branches:
+        section = {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": branch
+            }
+        }
+        list.append(section)
+
+
+    block = {"blocks": list}
+    b = json.dumps(block)
 
     if response and BOT_ID != user_id:
-        client.chat_postMessage(channel=channel_id, text=response)
+            #client.chat_postMessage(channel=channel_id, text=b)
+            client.chat_postMessage(channel=channel_id, blocks=b, text=branches)
 
     return Response(), 200
 
