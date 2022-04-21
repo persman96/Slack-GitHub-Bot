@@ -68,12 +68,12 @@ def get_branches():
         list.append(section)
 
 
-    block = {"blocks": list}
-    b = json.dumps(block)
+    #block = {"blocks": list}
+    #b = json.dumps(block)
 
     if response and BOT_ID != user_id:
             #client.chat_postMessage(channel=channel_id, text=b)
-            client.chat_postMessage(channel=channel_id, blocks=b, text=branches)
+            client.chat_postMessage(channel=channel_id, blocks=list, text=branches)
 
     return Response(), 200
 
