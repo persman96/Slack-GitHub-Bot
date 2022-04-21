@@ -180,16 +180,14 @@ def show_meme():
         meme_urls = f.read().splitlines()
     meme_url = random.choice(meme_urls)
 
-    # create block to display meme
-    block = {
-        "blocks": [
-            {
-                "type": "image",
-                "image_url": meme_url,
-                "alt_text": "meme"
-            }
-        ]
-    }
+    block = [
+        {
+            "type": "image",
+            "image_url": meme_url,
+            "alt_text": "meme"
+        }
+    ]
+
     if BOT_ID != user_id:
         client.chat_postMessage(channel=channel_id, blocks=block)
 
