@@ -29,7 +29,7 @@ def create_dispatch_block():
             "text": "Select a workflow",
         },
         "options": options_workflow,
-        "action_id": workflows
+        "action_id": "workflows"
     }
     branch_field = {
         "type": "static_select",
@@ -38,7 +38,7 @@ def create_dispatch_block():
             "text": "Select a branch",
         },
         "options": options_branches,
-        "action_id": branches
+        "action_id": "branches"
     }
     elements = [workflow_field, branch_field]
     block = [{"type": "actions",
