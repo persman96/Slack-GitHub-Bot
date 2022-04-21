@@ -1,11 +1,11 @@
 import json
+import random
 import slack
 from flask import Flask, request, Response
 from slackeventsapi import SlackEventAdapter
 from slack_github_bot.common import load_config_dict, parse_workflow_run
 from slack_github_bot.api import *
 import os
-
 
 app = Flask(__name__)
 """
@@ -19,7 +19,6 @@ API_PORT = cfg["api_port"]
 SIGNING_SECRET = os.environ['signing_secret']
 SLACK_TOKEN = os.environ['slack_token']
 API_PORT = os.environ["api_port"]
-
 
 slack_event_adapter = SlackEventAdapter(SIGNING_SECRET, '/slack/events', app)
 client = slack.WebClient(token=SLACK_TOKEN)
@@ -67,13 +66,12 @@ def get_branches():
         }
         list.append(section)
 
-
-    #block = {"blocks": list}
-    #b = json.dumps(block)
+    # block = {"blocks": list}
+    # b = json.dumps(block)
 
     if response and BOT_ID != user_id:
-            #client.chat_postMessage(channel=channel_id, text=b)
-            client.chat_postMessage(channel=channel_id, blocks=list, text=branches)
+        # client.chat_postMessage(channel=channel_id, text=b)
+        client.chat_postMessage(channel=channel_id, blocks=list, text=branches)
 
     return Response(), 200
 
@@ -88,7 +86,6 @@ def workflow_of_repo():
     workflows = get_all_workflows_of_repo()
 
     for workflow in workflows["workflows"]:
-
         name = workflow["name"]
         file_name = workflow["path"].split("/")[-1]
         url = workflow["html_url"]
@@ -167,6 +164,32 @@ def workflow_dispatch_event():
 
     if response and BOT_ID != user_id:
         client.chat_postMessage(channel=channel_id, text=response)
+
+    return Response(), 200
+
+
+@app.route('/meme', methods=['POST'])
+def show_meme():
+    data = request.form
+    user_id = data.get('user_id')
+    channel_id = data.get('channel_id')
+
+    with open('memes.txt', 'r') as f:
+        meme_urls = f.readlines()
+    meme_url = random.choice(meme_urls)
+
+    # create block to display meme
+    block = {
+        "blocks": [
+            {
+                "type": "image",
+                "image_url": meme_url,
+                "alt_text": "meme"
+            }
+        ]
+    }
+    if BOT_ID != user_id:
+        client.chat_postMessage(channel=channel_id, blocks=block)
 
     return Response(), 200
 

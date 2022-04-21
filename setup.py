@@ -10,7 +10,7 @@ setuptools.setup(
     description="Slack bot to interact with GitHub Actions",
     package_dir={"slack_github_bot": "slack_github_bot"},
     packages=["slack_github_bot"],
-    package_data={'': ['config.toml']},
+    package_data={'': ['config.toml', 'memes.txt']},
     include_package_data=True,
     python_requires=">=3.6",
     install_requires=["flask", "slackclient", "requests", "slackeventsapi", "toml", "gunicorn"],
