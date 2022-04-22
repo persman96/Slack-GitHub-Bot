@@ -216,6 +216,16 @@ def handle_webhook():
 
     return Response(), 200
 
+@app.route('/message_action')
+def handle_interactivity():
+    payload = request.form
+    channel_id = payload.get('channel_id')
+    slack_response_token = request.headers['X-Slack-Signature']
+    if slack_response_token != SLACK_TOKEN:
+        return Response(), 404
+    
+    client.chat_postMessage(channel=channel_id, text=payload)
+
 
 
 if __name__ == "__main__":
