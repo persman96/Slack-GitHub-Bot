@@ -10,12 +10,9 @@ import os
 
 app = Flask(__name__)
 
-"""SIGNING_SECRET = os.environ['signing_secret']
+SIGNING_SECRET = os.environ['signing_secret']
 SLACK_TOKEN = os.environ['slack_token']
-API_PORT = os.environ["api_port"]"""
-SIGNING_SECRET = '6886ec728b6691e3c22cdcc8ae90aa14'
-SLACK_TOKEN = 'xoxb-3413290463809-3394028058038-Q1XG3XUPJBgOhZuiNST8n2m8'
-API_PORT = 3000
+API_PORT = os.environ["api_port"]
 
 slack_event_adapter = SlackEventAdapter(SIGNING_SECRET, '/slack/events', app)
 client = slack.WebClient(token=SLACK_TOKEN)

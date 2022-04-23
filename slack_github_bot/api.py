@@ -6,18 +6,12 @@ import os
 from slack_github_bot.common import load_config_dict, parse_workflow_run
 
 # Config setup for heroku
-"""
 repository_link = os.environ['repository_link']
 owner = repository_link.split("/")[-2]
 repo = repository_link.split("/")[-1]
 token = os.environ["authorization_token"]
 timeout = 10
-"""
-repository_link = 'https://github.com/persman96/Slack-GitHub-Bot'
-owner = repository_link.split("/")[-2]
-repo = repository_link.split("/")[-1]
-token = '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'
-timeout = 10
+
 
 def get_branches_of_repo() -> Optional[list]:
     """
