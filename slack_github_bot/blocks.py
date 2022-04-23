@@ -5,11 +5,13 @@ def create_dispatch_block():
     options_workflow = []
     for workflow in workflows['workflows']:
         wf_name = workflow['name']
+        path = workflow['path']
+        file_name = path.split("/")[-1]
         options_workflow.append({"text": {
             "type": "plain_text",
             "text": wf_name
         },
-            "value": wf_name
+            "value": file_name
         })
 
     branches = get_branches_of_repo()
@@ -41,14 +43,42 @@ def create_dispatch_block():
         "action_id": "branches"
     }
     elements = [workflow_field, branch_field]
-    block = [{"type": "actions",
-              "elements": elements
-              }]
+    block = [{
+			"type": "section",
+			"block_id": "section678",
+			"text": {
+				"type": "mrkdwn",
+				"text": "Pick a workflow and a branch from the dropdown list!"
+			        }
+            },
+            {"type": "actions",
+                  "block_id": "create_dispatch",
+                  "elements": elements
+                  }]
     return block
 
+
 def parse_dispatch_response(response):
-    block_id = response['actions'][0]['block_id']
-    workflow = response['state']['values'][block_id]['workflows']['selected_option']['text']['text']
-    branch = response['state']['values'][block_id]['branches']['selected_option']['text']['text']
+
+    try:
+        selected_option = response['state']['values']['create_dispatch']['workflows']['selected_option']
+        if selected_option != None:
+            workflow = selected_option['value']
+        else:
+            workflow = ""
+    except:
+        workflow = ""
+        print("could not read workflow")
+
+    try:
+        selected_option = response['state']['values']['create_dispatch']['branches']['selected_option']
+        if selected_option != None:
+            branch = selected_option['value']
+        else:
+            branch = ""
+    except:
+        branch = ""
+        print("could not read branch")
+
     return workflow, branch
 

@@ -10,14 +10,18 @@ import os
 
 app = Flask(__name__)
 
-SIGNING_SECRET = os.environ['signing_secret']
+"""SIGNING_SECRET = os.environ['signing_secret']
 SLACK_TOKEN = os.environ['slack_token']
-API_PORT = os.environ["api_port"]
+API_PORT = os.environ["api_port"]"""
+SIGNING_SECRET = '6886ec728b6691e3c22cdcc8ae90aa14'
+SLACK_TOKEN = 'xoxb-3413290463809-3394028058038-Q1XG3XUPJBgOhZuiNST8n2m8'
+API_PORT = 3000
 
 slack_event_adapter = SlackEventAdapter(SIGNING_SECRET, '/slack/events', app)
 client = slack.WebClient(token=SLACK_TOKEN)
 BOT_ID = client.api_call("auth.test")['user_id']
 
+selected_workflow = ""
 
 @slack_event_adapter.on('message')
 def message(payload):
@@ -145,24 +149,7 @@ def workflow_dispatch_event():
     block = create_dispatch_block()
 
     if BOT_ID != user_id:
-        result = client.chat_postMessage(channel=channel_id, blocks=block)
-
-    #workflow, branch = parse_dispatch_response(result)
-    run_ID, branch = parse_dispatch_response(result)
-
-    #text = data.get('text')
-    #run_ID = text.split(' ')[0]
-    #branch = text.split(' ')[1]
-
-    success = create_workflow_dispatch_event(run_ID, branch)
-
-    if success:
-        response = f"Workflow {run_ID} dispatched on branch {branch}!"
-    else:
-        response = f"Workflow {run_ID} could not be dispatched on branch {branch}!"
-
-    if response and BOT_ID != user_id:
-        client.chat_postMessage(channel=channel_id, text=response)
+        client.chat_postMessage(channel=channel_id, blocks=block)
 
     return Response(), 200
 
@@ -216,18 +203,34 @@ def handle_webhook():
 
     return Response(), 200
 
-@app.route('/message_action')
+@app.route('/slack/message_action', methods=['POST'])
 def handle_interactivity():
-    payload = request.form
-    channel_id = payload.get('channel_id')
-    slack_response_token = request.headers['X-Slack-Signature']
-    if slack_response_token != SLACK_TOKEN:
-        return Response(), 404
-    
-    client.chat_postMessage(channel=channel_id, text=payload)
+    # Parse the request payload
+    form_json = json.loads(request.form["payload"])
+    user_id = form_json['user']['id']
+    channel_id = form_json['container']['channel_id']
+
+    # If /create_workflow_dispatch_event
+    try:
+        if form_json['actions'][0]['block_id'] == 'create_dispatch':
+            workflow, branch = parse_dispatch_response(form_json)
+
+            if workflow != "" and branch != "":
+                success = create_workflow_dispatch_event(workflow, branch)
+                if success:
+                    response = f"Workflow {workflow} dispatched on branch {branch}!"
+                else:
+                    response = f"Workflow {workflow} could not be dispatched on branch {branch}!"
+
+                if response and BOT_ID != user_id:
+                    client.chat_postMessage(channel=channel_id, text=response)
+    except:
+        print("something went wrong")
+
+
+    return Response(), 200
 
 
 
 if __name__ == "__main__":
-    get_workflows()
-    #app.run(port=API_PORT, debug=True)
+    app.run(port=API_PORT, debug=True)
