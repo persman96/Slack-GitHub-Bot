@@ -201,8 +201,7 @@ def handle_webhook():
         name, branch, conclusion = run["name"], run["head_branch"], run["conclusion"]
         if conclusion:
             response = f"Workflow {name} on branch {branch}: {conclusion}"
-            channel_id = "C03BV0JMXQC"
-            client.chat_postMessage(channel=channel_id, text=response)
+            client.chat_postMessage(channel=CHANNEL_ID, text=response)
 
     return Response(), 200
 
