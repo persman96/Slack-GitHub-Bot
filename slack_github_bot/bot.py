@@ -20,7 +20,7 @@ BOT_ID = client.api_call("auth.test")['user_id']
 
 selected_workflow = ""
 
-CHANNEL_ID = None
+CHANNEL_ID = "C03DC8FGADN"
 
 @slack_event_adapter.on('message')
 def message(payload):
@@ -189,6 +189,7 @@ def handle_webhook():
     Endpoint to receive webhooks from GitHub API.
     Currently, only handles workflow_run events.
     """
+    global CHANNEL_ID
     payload = request.get_data().decode('utf-8')
     data_dict = json.loads(payload)
 
