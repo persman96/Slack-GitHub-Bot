@@ -20,6 +20,8 @@ BOT_ID = client.api_call("auth.test")['user_id']
 
 selected_workflow = ""
 
+CHANNEL_ID = None
+
 @slack_event_adapter.on('message')
 def message(payload):
     event = payload.get('event', {})
@@ -139,9 +141,13 @@ def workflow_run():
 
 @app.route('/create_workflow_dispatch_event', methods=['POST'])
 def workflow_dispatch_event():
+    global CHANNEL_ID
     data = request.form
     user_id = data.get('user_id')
     channel_id = data.get('channel_id')
+
+    if channel_id != CHANNEL_ID:
+        CHANNEL_ID = channel_id
 
     block = create_dispatch_block()
 
